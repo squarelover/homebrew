@@ -6,9 +6,8 @@ class Lua <Formula
   @md5='d0870f2de55d59c1c8419f36e8fac150'
 
   def install
-    system "sed 's_/usr/local_#{prefix}_' < Makefile | sed 's_/man/man1_/share/man/man1_' > Makefile.new"
-    FileUtils.mv 'Makefile', 'Makefile.old'
-    FileUtils.mv 'Makefile.new', 'Makefile'
+    inreplace 'Makefile', '/usr/local', prefix
+    inreplace 'Makefile', 'man/man1', 'share/man/man1'
     system "make macosx"
     system "make install"
   end
