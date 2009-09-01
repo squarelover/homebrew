@@ -1,25 +1,19 @@
-#  Copyright 2009 Max Howell and other contributors.
+#  Copyright 2009 Max Howell <max@methylblue.com>
 #
-#  Redistribution and use in source and binary forms, with or without
-#  modification, are permitted provided that the following conditions
-#  are met:
+#  This file is part of Homebrew.
 #
-#  1. Redistributions of source code must retain the above copyright
-#     notice, this list of conditions and the following disclaimer.
-#  2. Redistributions in binary form must reproduce the above copyright
-#     notice, this list of conditions and the following disclaimer in the
-#     documentation and/or other materials provided with the distribution.
+#  Homebrew is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-#  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
-#  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
-#  OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-#  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
-#  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-#  NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-#  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-#  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-#  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-#  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#  Homebrew is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with Homebrew.  If not, see <http://www.gnu.org/licenses/>.
 #
 class ExecutionError <RuntimeError
   def initialize cmd, args=[]
@@ -56,6 +50,8 @@ class Formula
     @homepage=self.class.homepage unless @homepage
     @md5=self.class.md5 unless @md5
     @sha1=self.class.sha1 unless @sha1
+    
+    @dont_verify_integrity=false unless @dont_verify_integrity
   end
 
   # if the dir is there, but it's empty we consider it not installed
@@ -80,7 +76,6 @@ class Formula
   def bin; prefix+'bin' end
   def sbin; prefix+'sbin' end
   def doc; prefix+'share'+'doc'+name end
-  def etc; prefix+'etc' end
   def lib; prefix+'lib' end
   def libexec; prefix+'libexec' end
   def man; prefix+'share'+'man' end
@@ -212,6 +207,9 @@ private
     supplied=eval "@#{type.downcase}"
     hash=eval("Digest::#{type}").hexdigest(fn.read)
 
+    foo=@verify_integrity
+    puts "Integrity #{foo}"
+
     if supplied and not supplied.empty?
       raise "#{type} mismatch: #{hash}" unless supplied.upcase == hash.upcase
     else
@@ -225,7 +223,9 @@ private
     ds=download_strategy.new url, name, version
     HOMEBREW_CACHE.mkpath
     dl=ds.fetch
-    verify_download_integrity dl if dl.kind_of? Pathname
+    if @verify_integrity
+        verify_download_integrity dl if dl.kind_of? Pathname
+    end
     mktemp do
       ds.stage
       yield
