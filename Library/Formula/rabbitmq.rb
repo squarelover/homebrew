@@ -3,7 +3,7 @@ require 'brewkit'
 class Rabbitmq <Formula
   @homepage='http://rabbitmq.com'
   @url='http://www.rabbitmq.com/releases/rabbitmq-server/v1.6.0/rabbitmq-server-1.6.0.tar.gz'
-  @md5='foobarbaz'
+  @md5='af3b0d868d58e5aefb4f0837b82ca010'
   @version="1.6.0"
 
   def erlang_libdir
