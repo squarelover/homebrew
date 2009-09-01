@@ -1,6 +1,24 @@
 require 'brewkit'
 
-PATCH="
+# XXX have to set PY_PREFIX to the "prefix part" of the python binary
+# location, to support virtualenvs. Might be a better way to do this.
+#
+# TODO Fix java support anyone?
+#
+#
+#
+EXTRA_ENV = ""
+MACOSX_DEPLOYMENT_TARGET = ENV["MACOSX_DEPLOYMENT_TARGET"]
+if MACOSX_DEPLOYMENT_TARGET
+    EXTRA_ENV = "MACOSX_DEPLOYMENT_TARGET=#{MACOSX_DEPLOYMENT_TARGET}"
+end
+
+PYTHON_GET_PREFIX = '
+import sys
+print(sys.executable.split("/bin")[0])
+'
+
+PATCH1='
 --- /lib/cpp/src/concurrency/PosixThreadFactory.cpp	2008-11-24 14:36:45.000000000 -0800
 +++ /lib/cpp/src/concurrency/PosixThreadFactory.cpp	2008-11-24 16:41:30.000000000 -0800
 @@ -270,7 +270,7 @@
@@ -12,24 +30,30 @@ PATCH="
    }
  
  };
-"
+'
 
 class Thrift <Formula
   @homepage='http://incubator.apache.org/thrift/'
-  @url='http://gitweb.thrift-rpc.org/?p=thrift.git;a=snapshot;h=HEAD;sf=tgz'
-  @head="HEAD"
-  @version=@head
-  @dont_verify_integrity=true
+  @head='http://svn.apache.org/repos/asf/incubator/thrift/trunk'
+
+  def download_strategy
+      SubversionDownloadStrategy
+  end
+
+  def pyprefix
+    `python -c '#{PYTHON_GET_PREFIX}'`.strip()
+  end
+
+  def env
+      "env PY_PREFIX=#{pyprefix} #{EXTRA_ENV}"
+  end
 
   def install
-    # we specify libdir too because the script is apparently broken
-    system "tar xvfz '?p=thrift.git;a=snapshot;h=HEAD;sf=tgz'"
-    Dir.chdir("thrift")
     system "cp /usr/X11/share/aclocal/pkg.m4 aclocal"
-    system "echo '#{PATCH}' | patch -p1"
-    system "bash bootstrap.sh"
-    system "./configure --prefix='#{prefix}' --libdir='#{lib}'"
-    system "make"
-    system "make install"
+    system "echo '#{PATCH1}' | patch -p1"
+    system "#{env} bash bootstrap.sh"
+    system "#{env} ./configure --without-java --prefix='#{prefix}' --libdir='#{lib}'"
+    system "#{env} make"
+    system "#{env} make install"
   end
 end
