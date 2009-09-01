@@ -6,6 +6,10 @@ class Rabbitmq <Formula
   @md5='af3b0d868d58e5aefb4f0837b82ca010'
   @version="1.6.0"
 
+  def deps
+      BinaryDep.new 'erlang'
+  end
+
   def erlang_libdir
     [HOMEBREW_PREFIX, "lib", "erlang", "lib"].join("/")
   end
