@@ -7,11 +7,6 @@ require 'brewkit'
 #
 #
 #
-EXTRA_ENV = ""
-MACOSX_DEPLOYMENT_TARGET = ENV["MACOSX_DEPLOYMENT_TARGET"]
-if MACOSX_DEPLOYMENT_TARGET
-    EXTRA_ENV = "MACOSX_DEPLOYMENT_TARGET=#{MACOSX_DEPLOYMENT_TARGET}"
-end
 
 PYTHON_GET_PREFIX = '
 import sys
@@ -44,8 +39,12 @@ class Thrift <Formula
     `python -c '#{PYTHON_GET_PREFIX}'`.strip()
   end
 
+  def deployment_target
+      `sw_vers -productVersion`
+  end
+
   def env
-      "env PY_PREFIX=#{pyprefix} #{EXTRA_ENV}"
+      "env MACOSX_DEPLOYMENT_TARGET=#{deployment_target} PY_PREFIX=#{pyprefix}"
   end
 
   def install
