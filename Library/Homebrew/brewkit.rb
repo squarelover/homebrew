@@ -26,8 +26,13 @@ require 'formula'
 require 'download_strategy'
 require 'hw.model'
 
-ENV['MACOSX_DEPLOYMENT_TARGET']='10.5'
-ENV['CFLAGS']='-O3 -w -pipe -fomit-frame-pointer -mmacosx-version-min=10.5'
+if os_version == :snow_leopard
+  ENV['MACOSX_DEPLOYMENT_TARGET']='10.6'
+  ENV['CFLAGS']='-mmacosx-version-min=10.6'
+else
+  ENV['MACOSX_DEPLOYMENT_TARGET']='10.5'
+  ENV['CFLAGS']='-O3 -w -pipe -fomit-frame-pointer -mmacosx-version-min=10.5'
+end
 ENV['LDFLAGS']='' # to be consistent, we ignore the environment usually already
 
 # optimise all the way to eleven, references:
@@ -42,13 +47,13 @@ case hw_model
     # Core 2 DUO is a 64 bit chip
     # GCC 4.3 will have a -march=core2, but for now nocona is correct
     # Go full 64bit if snow_leopard
-    if os_version == :snow_leopard
-      # -mfpmath=sse defaults to on for the x64 compiler
-      ENV['CFLAGS']="#{ENV['CFLAGS']} -march=nocona -msse3 -mmmx -m64"
-      ENV['LDFLAGS']="-arch x86_64"
-    else
+    # if os_version == :snow_leopard
+    #   # -mfpmath=sse defaults to on for the x64 compiler
+    #   ENV['CFLAGS']="#{ENV['CFLAGS']} -march=nocona -msse3 -mmmx -m64"
+    #   ENV['LDFLAGS']="-arch x86_64"
+    # else
       ENV['CFLAGS']="#{ENV['CFLAGS']} -march=nocona -mfpmath=sse -msse3 -mmmx"
-    end
+    # end
   when :xeon
     # TODO what optimisations for xeon?
 
