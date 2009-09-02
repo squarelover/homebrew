@@ -18,4 +18,5 @@ class Icu4c <Formula
   
   def caveats
     "ICU doesn't like to build on Snow Leopard with all the heavy CFLAG optimizations, primarily -O3. You may need to change your brewkit environmet flags to get it to build on Snow Leopard."
+  end
 end
