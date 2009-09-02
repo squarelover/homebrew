@@ -6,6 +6,10 @@ class Icu4c <Formula
   @md5='10d1cdc843f8e047fc308ec49d3d0543'
   @version = "4.3.1"
   
+  def patches
+    ["http://pastie.org/603488.txt"]
+  end
+  
   def install
     config_flags = ["MacOSX", "--prefix=#{prefix}", "--disable-samples", "--enable-static"]
     config_flags << "--with-library-bits=64" if hw_model == :core2 and os_version == :snow_leopard
