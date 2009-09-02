@@ -24,7 +24,10 @@
 class Dependency
   def initialize name, 
     formula = Formula.factory(name)
-    formula.brew {|f| f.install } unless formula.installed? or optional?
+    formula.brew do |f|
+      f.install
+       Keg.new(f.prefix).link
+    end unless formula.installed? or optional?
   end
   
   def optional?
