@@ -41,13 +41,14 @@ case hw_model
   when :core2
     # Core 2 DUO is a 64 bit chip
     # GCC 4.3 will have a -march=core2, but for now nocona is correct
-    ENV['CFLAGS']="#{ENV['CFLAGS']} -march=nocona -mfpmath=sse -msse3 -mmmx"
-    
-    # OK so we're not doing 64 bit yet... but we will with Snow Leopard
-    # -mfpmath=sse defaults to on for the x64 compiler
-    #ENV['CFLAGS']="#{ENV['CFLAGS']} -march=nocona -msse3 -mmmx -m64"
-    #ENV['LDFLAGS']="-arch x86_64"
-
+    # Go full 64bit if snow_leopard
+    if os_version == :snow_leopard
+      # -mfpmath=sse defaults to on for the x64 compiler
+      ENV['CFLAGS']="#{ENV['CFLAGS']} -march=nocona -msse3 -mmmx -m64"
+      ENV['LDFLAGS']="-arch x86_64"
+    else
+      ENV['CFLAGS']="#{ENV['CFLAGS']} -march=nocona -mfpmath=sse -msse3 -mmmx"
+    end
   when :xeon
     # TODO what optimisations for xeon?
 

@@ -86,3 +86,25 @@ def hw_model
     end
   end
 end
+
+# Simple method that calls sw_vers and parses it for supported versions
+# Possible returns: 
+#   :leopard
+#   :snow_leopard
+#   :unsupported
+#   :future
+#   :unknown
+def os_version
+  os_match = `sw_vers`.match(/^ProductVersion:\s*(10\.\d)$/)
+  if os_match and os_match[1]
+    case os_match[1]
+    when '10.6' then :snow_leopard
+    when '10.5' then :leopard
+    when /^10\.[0-4]/ then :unsupported
+    when /^10\.[7-9]/ then :future
+    else :unknown
+    end
+  else
+    :unknown
+  end
+end
