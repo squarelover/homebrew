@@ -10,11 +10,18 @@ class Spidermonkey <Formula
     LibraryDep.new 'readline'
     LibraryDep.new 'nspr'
   end
-  
+
+  def patches
+    {
+      :p0 => ["http://gist.github.com/raw/179415/eed70f1b4bae73fb92995eaf07870d40c0ceb03e/gistfile1.diff"]
+    }
+  end
+
   def install
+    nspr_dep = Formula.factory 'nspr'
     ENV.deparallelize
     Dir.chdir "src" do
-      system "make JS_DIST=#{prefix}/../../nspr/4.7.5 JS_THREADSAFE=1 -f Makefile.ref"
+      system "make JS_DIST=#{nspr_dep.prefix} JS_THREADSAFE=1 -f Makefile.ref"
       system "make JS_DIST=#{prefix} -f Makefile.ref export"
       system "ranlib #{prefix}/lib/libjs.a"
     end
