@@ -24,6 +24,21 @@ class Erlang <Formula
     LibraryDep.new 'icu4c'
     LibraryDep.new 'openssl'
   end
+  
+  # def patches
+  #   [
+  #     "http://pastie.org/603456.txt", 
+  #     "http://pastie.org/603462.txt",
+  #     "http://svn.macports.org/repository/macports/trunk/dports/lang/erlang/files/patch-lib-erl_interface-include-ei.h.diff",
+  #     "http://svn.macports.org/repository/macports/trunk/dports/lang/erlang/files/patch-lib-erl_interface-src-connect-ei_connect.c.diff",
+  #     "http://pastie.org/603469.txt",
+  #     "http://pastie.org/603475.txt",
+  #     "http://pastie.org/603478.txt",
+  #     "http://pastie.org/603480.txt",
+  #     "http://pastie.org/603481.txt",
+  #     "http://pastie.org/603485.txt"
+  #   ]
+  # end
     
   def install
     ENV.deparallelize
@@ -38,7 +53,7 @@ class Erlang <Formula
                           "--with-ssl=#{openssl_prefix}",
                           "--enable-smp-support",
                           "--enable-hipe"]
-    config_flags << "--enable-darwin-64bit" if hw_model == :core2 and os_version == :snow_leopard
+    config_flags << "--enable-darwin-64bit" if Hardware.intel_family == :core2 and MACOS_VERSION == 10.6
     system "./configure", *config_flags
     system "make"
     system "make install"

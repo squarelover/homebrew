@@ -12,7 +12,7 @@ class Icu4c <Formula
   
   def install
     config_flags = ["MacOSX", "--prefix=#{prefix}", "--disable-samples", "--enable-static"]
-    config_flags << "--with-library-bits=64" if hw_model == :core2 and os_version == :snow_leopard
+    config_flags << "--with-library-bits=64" if Harware.intel_family == :core2 and MACOS_VERSION == 10.6
     Dir.chdir "source" do
       system "./runConfigureICU", *config_flags
       system "make"
