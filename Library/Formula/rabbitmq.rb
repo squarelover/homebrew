@@ -26,4 +26,8 @@ class Rabbitmq <Formula
                 make install"
     system "ln -sf #{sbin}/* #{homebrew_bindir}/"
   end
+
+  def caveats
+    "The output from the install phase of the make file will cause brew to believe the install failed if you use the --verbose flag."
+  end
 end
