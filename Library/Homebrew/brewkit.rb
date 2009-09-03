@@ -130,6 +130,9 @@ module HomebrewEnvExtension
     remove_from_cflags '-w'
   end
   
+  def remove_from_cflags rx
+    %w[CFLAGS CXXFLAGS].each {|key| remove key, rx}
+  end
 private
   def append key, value
     ref=self[key]
@@ -145,9 +148,7 @@ private
     self[key]=self[key].sub rx, ''
     self[key]=nil if self[key].empty? # keep things clean
   end
-  def remove_from_cflags rx
-    %w[CFLAGS CXXFLAGS].each {|key| remove key, rx}
-  end
+
 end
 
 ENV.extend HomebrewEnvExtension
