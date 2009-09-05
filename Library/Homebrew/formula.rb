@@ -25,7 +25,7 @@ require 'dependency'
 
 class ExecutionError <RuntimeError
   def initialize cmd, args=[]
-    super "#{cmd} #{args*' '}"
+    super "Failure while executing: #{cmd} #{args*' '}"
   end
 end
 class BuildError <ExecutionError
